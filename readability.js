@@ -1,9 +1,18 @@
+/*
+ *  Modified version of the Readability bookmarklet:
+ */
+readStyle = 'style-newspaper';
+readSize = 'size-large';
+readMargin = 'margin-medium';
+
+/*
+ *  debug
+ */
 var dbg = (typeof console !== 'undefined') ? function(s) {
-    console.log("Readability: " + s);
+    console.log("scrapedown: " + s);
 } : function() {};
 
 /*
- * Modified version of the Readability bookmarklet:
  *
  * Readability. An Arc90 Lab Experiment.
  * Website: http://lab.arc90.com/experiments/readability

@@ -1,4 +1,4 @@
-TEST_LOCATION="http://localhost/pivotal-cards/"
+TEST_LOCATION="http://localhost/scrapedown/"
 LIVE_LOCATION="https://googledrive.com/host/0B2OA3Yt-UfhJYVBxUGxiY0w5STg/"
 
 all::	bookmarklet test-bookmarklet index.html
