@@ -6,7 +6,7 @@
 	/* inject stylesheet into page */
 	var css = document.createElement('link');
 	css.rel = 'stylesheet';
-	css.href = location + 'readability.css' + nocache;
+	css.href = location + 'scrapedown.css' + nocache;
 	css.media = 'screen,print';
 	css.type = 'text/css';
 	document.getElementsByTagName('head')[0].appendChild(css);
