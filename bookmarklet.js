@@ -13,7 +13,6 @@
 
 	/* inject JavaScript into page */
 	var js = document.createElement('script');
-	js.src = location + 'readability.js' + nocache;
+	js.src = location + 'scrapedown.js' + nocache;
 	document.body.appendChild(js);
-
 })();
