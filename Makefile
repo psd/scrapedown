@@ -1,9 +1,18 @@
 TEST_LOCATION="http://localhost/scrapedown/"
 LIVE_LOCATION="http://localhost/scrapedown/"
 
-all::	bookmarklet test-bookmarklet index.html
+all::	index.html test.html
 
 init::	dependencies
+
+#
+#  build documentation
+#
+index.html:	index.sh bookmarklet
+	./index.sh bookmarklet > $@
+
+test.html:	index.sh test-bookmarklet
+	./index.sh test-bookmarklet > $@
 
 #
 #  build bookmarklets
@@ -13,12 +22,6 @@ bookmarklet:	bookmarklet.js Makefile
 
 test-bookmarklet:	bookmarklet.js Makefile
 	( echo "javascript:\\c" ; sed -e "s+location = '+location='$(TEST_LOCATION)+" -e "s/nocache = ''/nocache='?nocache='+Math.random()/" < bookmarklet.js | uglifyjs ) > $@
-
-#
-#  build documentation
-#
-index.html:	index.sh bookmarklet.js
-	./index.sh > $@
 
 #
 #  dependencies
@@ -43,4 +46,4 @@ clean::	clobber
 	rm -f jquery.js underscore.js
 
 clobber::;
-	rm -f bookmarklet test-bookmarklet index.html
+	rm -f bookmarklet test-bookmarklet index.html test.html
