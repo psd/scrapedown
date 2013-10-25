@@ -1,5 +1,5 @@
 TEST_LOCATION="http://localhost/scrapedown/"
-LIVE_LOCATION="https://googledrive.com/host/0B2OA3Yt-UfhJYVBxUGxiY0w5STg/"
+LIVE_LOCATION="http://localhost/scrapedown/"
 
 all::	bookmarklet test-bookmarklet index.html
 
@@ -17,7 +17,7 @@ test-bookmarklet:	bookmarklet.js Makefile
 #
 #  build documentation
 #
-index.html:	index.sh
+index.html:	index.sh bookmarklet.js
 	./index.sh > $@
 
 #
