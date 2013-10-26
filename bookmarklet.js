@@ -7,7 +7,7 @@
 	var css = document.createElement('link');
 	css.rel = 'stylesheet';
 	css.href = location + 'scrapedown.css' + nocache;
-	css.media = 'screen,print';
+	css.media = 'all';
 	css.type = 'text/css';
 	document.getElementsByTagName('head')[0].appendChild(css);
 

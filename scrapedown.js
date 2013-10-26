@@ -175,8 +175,13 @@ var readability = {
         /*
          *  scrapedown!
          */
-        var md = toMarkdown(innerDiv.innerHTML);
-        console.log(md);
+        var textarea = document.createElement("textarea");
+        var text = toMarkdown(innerDiv.innerHTML);
+
+        textarea.value = text;
+        textarea.setAttribute('cols', 100);
+        textarea.setAttribute('rows', text.split(/\n/).length);
+        overlay.appendChild(textarea);
 
         /** Smooth scrolling **/
         document.onkeydown = function(e) {
@@ -400,7 +405,8 @@ var readability = {
 
         /* Remove all stylesheets */
         for (var k=0;k < document.styleSheets.length; k++) {
-            if (document.styleSheets[k].href !== null && document.styleSheets[k].href.lastIndexOf("readability") == -1) {
+            if (document.styleSheets[k].href !== null && document.styleSheets[k].href.lastIndexOf("scrapedown") == -1) {
+                dbg("Disable stylesheet: " + document.styleSheets[k].href);
                 document.styleSheets[k].disabled = true;
             }
         }

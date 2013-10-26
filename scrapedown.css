@@ -1,0 +1,13 @@
+@charset "utf-8";
+
+#readInner {
+  display: none;
+}
+
+textarea {
+  width: 100%;
+  font-size: 18px;
+  font-family: monospace;
+  font-weight: lighter;
+  color: #444;
+}
