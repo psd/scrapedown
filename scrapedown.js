@@ -1,9 +1,6 @@
 /*
- *  Modified version of the Readability bookmarklet:
+ *  Scrapedown - make a fist at turning a Web page into markdown
  */
-readStyle = 'style-newspaper';
-readSize = 'size-large';
-readMargin = 'margin-medium';
 
 /*
  *  debug
@@ -121,16 +118,7 @@ var readability = {
         innerDiv.id             = "readInner";
 
         /* Apply user-selected styling */
-        document.body.className = readStyle;
         document.dir            = readability.getSuggestedDirection(articleTitle.innerHTML);
-
-        if (readStyle == "style-athelas" || readStyle == "style-apertura"){
-            overlay.className = readStyle + " rdbTypekit";
-        }
-        else {
-            overlay.className = readStyle;
-        }
-        innerDiv.className    = readMargin + " " + readSize;
 
         if(typeof(readConvertLinksToFootnotes) !== 'undefined' && readConvertLinksToFootnotes === true) {
             readability.convertLinksToFootnotes = true;
@@ -156,11 +144,6 @@ var readability = {
         readability.postProcessContent(articleContent);
 
         window.scrollTo(0, 0);
-
-        /* If we're using the Typekit library, select the font */
-        if (readStyle == "style-athelas" || readStyle == "style-apertura") {
-            readability.useRdbTypekit();
-        }
 
         if (nextPageLink) {
             /**
@@ -496,63 +479,6 @@ var readability = {
         if(linkCount > 0) {
             footnotesWrapper.style.display = 'block';
         }
-    },
-
-    useRdbTypekit: function () {
-        var rdbHead      = document.getElementsByTagName('head')[0];
-        var rdbTKScript  = document.createElement('script');
-        var rdbTKCode    = null;
-
-        var rdbTKLink    = document.createElement('a');
-            rdbTKLink.setAttribute('class','rdbTK-powered');
-            rdbTKLink.setAttribute('title','Fonts by Typekit');
-            rdbTKLink.innerHTML = "Fonts by <span class='rdbTK'>Typekit</span>";
-
-        if (readStyle == "style-athelas") {
-            rdbTKCode = "sxt6vzy";
-            dbg("Using Athelas Theme");
-
-            rdbTKLink.setAttribute('href','http://typekit.com/?utm_source=readability&utm_medium=affiliate&utm_campaign=athelas');
-            rdbTKLink.setAttribute('id','rdb-athelas');
-            document.getElementById("rdb-footer-right").appendChild(rdbTKLink);
-        }
-        if (readStyle == "style-apertura") {
-            rdbTKCode = "bae8ybu";
-            dbg("Using Inverse Theme");
-
-            rdbTKLink.setAttribute('href','http://typekit.com/?utm_source=readability&utm_medium=affiliate&utm_campaign=inverse');
-            rdbTKLink.setAttribute('id','rdb-inverse');
-            document.getElementById("rdb-footer-right").appendChild(rdbTKLink);
-        }
-
-        /**
-         * Setting new script tag attributes to pull Typekits libraries
-        **/
-        rdbTKScript.setAttribute('type','text/javascript');
-        rdbTKScript.setAttribute('src',"http://use.typekit.com/" + rdbTKCode + ".js");
-        rdbTKScript.setAttribute('charset','UTF-8');
-        rdbHead.appendChild(rdbTKScript);
-
-        /**
-         * In the future, maybe try using the following experimental Callback function?:
-         * http://gist.github.com/192350
-         * &
-         * http://getsatisfaction.com/typekit/topics/support_a_pre_and_post_load_callback_function
-        **/
-        var typekitLoader = function() {
-            dbg("Looking for Typekit.");
-            if(typeof Typekit != "undefined") {
-                try {
-                    dbg("Caught typekit");
-                    Typekit.load();
-                    clearInterval(window.typekitInterval);
-                } catch(e) {
-                    dbg("Typekit error: " + e);
-                }
-            }
-        };
-
-        window.typekitInterval = window.setInterval(typekitLoader, 100);
     },
 
     /**
@@ -954,13 +880,12 @@ var readability = {
         var scripts = doc.getElementsByTagName('script');
         for(var i = scripts.length-1; i >= 0; i--)
         {
-            if(typeof(scripts[i].src) == "undefined" || (scripts[i].src.indexOf('readability') == -1 && scripts[i].src.indexOf('typekit') == -1))
-            {
+            if(typeof(scripts[i].src) == "undefined" || (scripts[i].src.indexOf('scrapedown') == -1)) {
                 scripts[i].nodeValue="";
                 scripts[i].removeAttribute('src');
-		if (scripts[i].parentNode) {
-	                scripts[i].parentNode.removeChild(scripts[i]);
-		}
+                if (scripts[i].parentNode) {
+                    scripts[i].parentNode.removeChild(scripts[i]);
+                }
             }
         }
     },
