@@ -2,6 +2,7 @@
 	/* location of scripts */
 	var location = '';
 	var nocache = '';
+    scrapedown_location = location;
 
 	/* inject stylesheet into page */
 	var css = document.createElement('link');
