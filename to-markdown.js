@@ -37,9 +37,16 @@ function toMarkdown(string) {
     {
       patterns: 'a',
       replacement: function(str, attrs, innerHTML) {
-        var href = attrs.match(attrRegExp('href')),
-            title = attrs.match(attrRegExp('title'));
-        return href ? '[' + innerHTML + ']' + '(' + href[1] + (title && title[1] ? ' "' + title[1] + '"' : '') + ')' : str;
+        var href = attrs.match(attrRegExp('href'));
+        var title = attrs.match(attrRegExp('title'));
+        // escape parens to avoid URL and title breaking markdown
+        if (href && href[1]) {
+            href = href[1].replace(/\(/g, '%28').replace(/\)/g, '%29');
+        }
+        if (title && title[1]) {
+            title = title[1].replace(/\(/g, '\&#40;').replace(/\)/g, '\&#41;');
+        }
+        return href ? '[' + innerHTML + ']' + '(' + href + (title ? ' "' + title + '"' : '') + ')' : str;
       }
     },
     {
