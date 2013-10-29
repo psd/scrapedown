@@ -48,3 +48,6 @@ textarea {
   font-family: monospace;
 }
 
+#previewPane:first-child {
+  margin-top: 0;
+}
