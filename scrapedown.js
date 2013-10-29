@@ -35,17 +35,6 @@ loadScript(scrapedown_location + "readability.js", function () {
  */
 function scrapedown_build_gui(text) {
 
-    /*
-    <div id="scrapedown">
-    <div id="leftContainer">
-        <textarea id="inputPane" cols="80" rows="20" class="pane"></textarea> 
-    </div>
-    <div id="rightContainer">
-        <div id="previewPane" class="pane"><noscript><h2>You'll need to enable Javascript to use this tool.</h2></noscript></div>
-    </div>
-    </div>
-    */
-
     var gui = document.createElement("div");
     gui.id = "scrapedown";
 
