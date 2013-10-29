@@ -14,10 +14,6 @@ html {
   margin: 1em 0;
 }
 
-textarea {
-  font-family: monospace;
-}
-
 #leftContainer, #rightContainer {
   margin: 0;
   padding: 0;
@@ -43,7 +39,12 @@ textarea {
   display: block;
   overflow: auto;
   width: 100%;
-  height: 400px;
+  height: 800px;
   margin: 0;
   padding: 0;
 }
+
+textarea {
+  font-family: monospace;
+}
+
