@@ -102,6 +102,10 @@ function toMarkdown(string) {
     return new RegExp(attr + '\\s*=\\s*["\']?([^"\']*)["\']?', 'i');
   }
 
+  // ditch divs and spans
+
+  string = string.replace(/<\/*(span|div)\b[^>]*>/gi, '');
+
   // Pre code blocks
 
   string = string.replace(/<pre\b[^>]*>`([\s\S]*)`<\/pre>/gi, function(str, innerHTML) {
