@@ -23,8 +23,15 @@ loadScript("readability.js", function () {
     readability.init(function (div) {
         loadScript("to-markdown.js", function () {
             var text = toMarkdown(div.innerHTML);
-            textarea = scrapedown_build_gui();
-            textarea.value = text;
+            scrapedown_build_gui();
+            document.getElementById('inputPane').value = text;
+
+            loadScript("showdown.js", function () {
+                scrapedown_render();
+
+                // polling for changes is a little clumsy, but most reliable ..
+                window.setInterval(scrapedown_render, 500);
+            });
         });
     });
 });
@@ -56,7 +63,30 @@ function scrapedown_build_gui(text) {
     var preview = document.createElement("div");
     preview.setAttribute("class", "pane");
     preview.id = "previewPane";
+    right.appendChild(preview);
 
     document.body.appendChild(gui);
-    return textarea;
 }
+
+
+/*
+ *  render preview of markdown text
+ */
+var lastText;
+var converter;
+
+function scrapedown_render() {
+
+    text = document.getElementById('inputPane').value;
+
+    if (text === lastText) {
+        return;
+    }
+    lastText = text;
+
+    if (!converter) {
+        converter = new Showdown.converter();
+    }
+
+    document.getElementById('previewPane').innerHTML = converter.makeHtml(text);
+};
