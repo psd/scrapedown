@@ -102,7 +102,15 @@ function toMarkdown(string) {
     return new RegExp(attr + '\\s*=\\s*["\']?([^"\']*)["\']?', 'i');
   }
 
-  // ditch divs and spans
+  // ditch comments
+
+  string = string.replace(/<!--[\s\S]*?-->/g, '');
+
+  // ditch noscript blocks
+
+  string = string.replace(/<noscript[\s\S]*?<\/noscript>/g, '');
+
+  // ditch div and span elements
 
   string = string.replace(/<\/*(span|div)\b[^>]*>/gi, '');
 
