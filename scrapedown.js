@@ -5,7 +5,7 @@ function loadScript(src, callback, value) {
     var r = false;
     var js = document.createElement('script');
     js.type = 'text/javascript';
-    js.src = src;
+    js.src = scrapedown_location + src;
     js.onload = js.onreadystatechange = function() {
         if (!r && (!this.readyState || this.readyState == 'complete')) {
           r = true;
@@ -19,9 +19,9 @@ function loadScript(src, callback, value) {
 /*
  *  daisy chain loading scripts ..
  */
-loadScript(scrapedown_location + "readability.js", function () {
+loadScript("readability.js", function () {
     readability.init(function (div) {
-        loadScript(scrapedown_location + "to-markdown.js", function () {
+        loadScript("to-markdown.js", function () {
             var text = toMarkdown(div.innerHTML);
             textarea = scrapedown_build_gui();
             textarea.value = text;
