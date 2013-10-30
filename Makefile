@@ -1,5 +1,5 @@
 TEST_LOCATION="http://localhost/scrapedown/"
-LIVE_LOCATION="http://localhost/scrapedown/"
+LIVE_LOCATION="http://psd.github.com/scrapedown/"
 
 all::	index.html test.html
 
