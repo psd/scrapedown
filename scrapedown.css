@@ -48,6 +48,10 @@ textarea {
   font-family: monospace;
 }
 
-#previewPane:first-child {
+#previewPane *:first-child {
   margin-top: 0;
+}
+
+#previewPane img {
+  max-width: 100%;
 }
