@@ -117,9 +117,9 @@ function toMarkdown(string) {
 
   string = string.replace(/<noscript[\s\S]*?<\/noscript>/g, '');
 
-  // ditch div and span elements
+  // ditch misc tags
 
-  string = string.replace(/<\/*(span|div)\b[^>]*>/gi, '');
+  string = string.replace(/<\/*(span|div|form|big|small)\b[^>]*>/gi, '');
 
   // Pre code blocks
 
