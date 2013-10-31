@@ -6,6 +6,12 @@ all::	index.html test.html
 init::	dependencies
 
 #
+#  run tests
+#
+test::
+	mocha test/run.js
+
+#
 #  build documentation
 #
 index.html:	index.sh bookmarklet
@@ -26,24 +32,13 @@ test-bookmarklet:	bookmarklet.js Makefile
 #
 #  dependencies
 #
-dependencies:	uglifyjs 
-#jquery.js underscore.js
-
-jquery.js:
-	curl -s 'http://code.jquery.com/jquery-1.7.2.min.js' > jquery.js
-
-underscore.js:
-	curl -s 'http://documentcloud.github.com/underscore/underscore-min.js' > underscore.js
-
-uglifyjs::
-	npm install -g uglify-js
-	
+#  TBD: move to npm, it's a little bit naughty these are global installs
+#
+dependencies:
+	npm install -g uglify-js mocha should
 
 #
 #  prune back to source code
 #
-clean::	clobber
-	rm -f jquery.js underscore.js
-
-clobber::;
+clean::
 	rm -f bookmarklet test-bookmarklet index.html test.html
