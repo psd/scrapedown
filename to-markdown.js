@@ -152,7 +152,7 @@ function toMarkdown(string) {
 
       for(i = 0, len = lis.length; i < len; i++) {
         if(lis[i]) {
-          var prefix = (listType === 'ol') ? (i + 1) + ".  " : "*   ";
+          var prefix = (listType === 'ol') ? (i + 1) + ". " : "* ";
           lis[i] = lis[i].replace(/\s*<li[^>]*>([\s\S]*)/i, function(str, innerHTML) {
 
             innerHTML = innerHTML.replace(/^\s+/, '');
@@ -197,3 +197,6 @@ function toMarkdown(string) {
 
   return cleanUp(string);
 };
+
+// export
+if (typeof module !== 'undefined') module.exports = toMarkdown;
