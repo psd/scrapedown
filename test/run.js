@@ -3,9 +3,10 @@ var showdown    = new require('../showdown'),
     path        = require('path'),
     should      = require('should');
 
-var converter = new showdown.converter();
-
-var runTestsInDir = function(dir, converter) {
+/*
+ *  run all the test cases in a directory
+ */
+var runTestsInDir = function(dir, testExpected, testActual) {
 
     // Load test cases from disk
     var cases = fs.readdirSync(dir).filter(function(file){
@@ -18,11 +19,11 @@ var runTestsInDir = function(dir, converter) {
     showdown.forEach(cases, function(test){
         var name = test.replace(/[-.]/g, ' ');
         it (name, function(){
-            var mdpath = path.join(dir, test + '.md'),
-                htmlpath = path.join(dir, test + '.html'),
-                md = fs.readFileSync(mdpath, 'utf8'),
-                expected = fs.readFileSync(htmlpath, 'utf8').trim(),
-                actual = converter.makeHtml(md).trim();
+            var mdpath = path.join(dir, test + '.md');
+            var htmlpath = path.join(dir, test + '.html');
+
+            var expected = testExpected(mdpath, htmlpath);
+            var actual = testActual(mdpath, htmlpath);
 
             // Normalize line returns
             expected = expected.replace(/\r/g, '');
@@ -51,7 +52,17 @@ var runTestsInDir = function(dir, converter) {
 //
 // :: Markdown to HTML testing ::
 //
-
 describe('Markdown', function() {
-    runTestsInDir('test/cases', converter);
+    var converter = new showdown.converter();
+
+    var showdownExpected = function(mdpath, htmlpath) {
+        return fs.readFileSync(htmlpath, 'utf8').trim();
+    }
+
+    var showdownActual = function(mdpath, htmlpath) {
+        var md = fs.readFileSync(mdpath, 'utf8');
+        return converter.makeHtml(md).trim();
+    }
+
+    runTestsInDir('test/showdown', showdownExpected, showdownActual);
 });
