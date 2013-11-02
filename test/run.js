@@ -37,13 +37,6 @@ var runTestsInDir = function(dir, testExpected, testActual) {
                 return x.trim();
             }).join('\n');
 
-            // Convert whitespace to a visible character so that it shows up on error reports
-            expected = expected.replace(/ /g, '·');
-            expected = expected.replace(/\n/g, '␊\n');
-
-            actual = actual.replace(/ /g, '·');
-            actual = actual.replace(/\n/g, '•\n');
-
             // Compare
             actual.should.equal(expected);
         });
