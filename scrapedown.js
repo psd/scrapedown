@@ -15,27 +15,40 @@ function loadScript(src, callback, value) {
     document.body.appendChild(js);
 }
 
+scrapedown_init();
 
 /*
- *  daisy chain loading scripts ..
+ *  convert selected text, or readability page
  */
-loadScript("readability.js", function () {
-    readability.init(function (div) {
-        loadScript("to-markdown.js", function () {
-            var text = toMarkdown(div.innerHTML);
-            scrapedown_build_gui();
-            document.getElementById('inputPane').value = text;
-
-            loadScript("showdown.js", function () {
-                scrapedown_render();
-
-                // polling for changes is a little clumsy, but most reliable ..
-                window.setInterval(scrapedown_render, 500);
-            });
+function  scrapedown_init() {
+    var html = getSelectionHtml();
+    loadScript("readability.js", function () {
+        readability.init(function (div) {
+            if (!html) {
+                html = div.innerHTML;
+            }
+            scrapedown_html(html);
         });
     });
-});
+}
 
+/*
+ *  convert to-markdown
+ */
+function scrapedown_html(html) {
+    loadScript("to-markdown.js", function () {
+        var text = toMarkdown(html);
+        scrapedown_build_gui();
+        document.getElementById('inputPane').value = text;
+
+        loadScript("showdown.js", function () {
+            scrapedown_render();
+
+            // polling for changes is a little clumsy, but most reliable ..
+            window.setInterval(scrapedown_render, 500);
+        });
+    });
+}
 
 /*
  *  create gui
@@ -90,3 +103,26 @@ function scrapedown_render() {
 
     document.getElementById('previewPane').innerHTML = converter.makeHtml(text);
 };
+
+
+/*
+ *  attempt to get the selected portion of the page as HTML
+ */
+function getSelectionHtml() {
+    var html = "";
+    if (typeof window.getSelection != "undefined") {
+        var sel = window.getSelection();
+        if (sel.rangeCount) {
+            var container = document.createElement("div");
+            for (var i = 0, len = sel.rangeCount; i < len; ++i) {
+                container.appendChild(sel.getRangeAt(i).cloneContents());
+            }
+            html = container.innerHTML;
+        }
+    } else if (typeof document.selection != "undefined") {
+        if (document.selection.type == "Text") {
+            html = document.selection.createRange().htmlText;
+        }
+    }
+    return html;
+}

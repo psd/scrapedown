@@ -117,9 +117,9 @@ function toMarkdown(string) {
 
   string = string.replace(/<noscript[\s\S]*?<\/noscript>/g, '');
 
-  // ditch div and span elements
+  // ditch misc tags
 
-  string = string.replace(/<\/*(span|div)\b[^>]*>/gi, '');
+  string = string.replace(/<\/*(span|div|form|big|small)\b[^>]*>/gi, '');
 
   // Pre code blocks
 
@@ -152,7 +152,7 @@ function toMarkdown(string) {
 
       for(i = 0, len = lis.length; i < len; i++) {
         if(lis[i]) {
-          var prefix = (listType === 'ol') ? (i + 1) + ".  " : "*   ";
+          var prefix = (listType === 'ol') ? (i + 1) + ". " : "* ";
           lis[i] = lis[i].replace(/\s*<li[^>]*>([\s\S]*)/i, function(str, innerHTML) {
 
             innerHTML = innerHTML.replace(/^\s+/, '');
@@ -178,7 +178,7 @@ function toMarkdown(string) {
 
   function replaceBlockquotes(html) {
     html = html.replace(/<blockquote\b[^>]*>([\s\S]*?)<\/blockquote>/gi, function(str, inner) {
-      inner = inner.replace(/^\s+|\s+$/g, '');
+      inner = inner.replace(/^\s*|\s*$/g, '');
       inner = cleanUp(inner);
       inner = inner.replace(/^/gm, '> ');
       inner = inner.replace(/^(>([ \t]{2,}>)+)/gm, '> >');
@@ -197,3 +197,6 @@ function toMarkdown(string) {
 
   return cleanUp(string);
 };
+
+// export
+if (typeof module !== 'undefined') module.exports = toMarkdown;
