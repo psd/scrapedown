@@ -13,6 +13,7 @@ cat <<-!
 echo "<p>Drag the <a href='"$(cat $bookmarklet)"'>scrapedown</a> bookmarklet to your bookmarks bar</p>"
 
 cat <<-!
+<p>In case of problems try selecting a portion of the page, or use the online <a href="http://www.readability.com/bookmarklets">Readabilty bookmarklet</a> first.
 <p><a id="github" href="https://github.com/psd/scrapedown">Fork me on github</a>!</p>
 <p>Made by <a href="http://whatfettle.com">psd</a> for <a href="http://www.gov.uk">GOV.UK</a>.</p>
 </body>
