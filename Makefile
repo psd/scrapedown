@@ -1,6 +1,9 @@
 TEST_LOCATION="http://localhost/scrapedown/"
 LIVE_LOCATION="http://psd.github.com/scrapedown/"
 
+MOCHA=./node_modules/mocha/bin/mocha
+UGLIFY=./node_modules/uglify-js/bin/uglifyjs
+
 all::	index.html test.html
 
 init::	dependencies
@@ -10,7 +13,7 @@ init::	dependencies
 #
 test::
 	@-mkdir -p extensions
-	mocha test/run.js
+	$(MOCHA) test/run.js
 
 #
 #  build documentation
@@ -25,20 +28,16 @@ test.html:	index.sh test-bookmarklet
 #  build bookmarklets
 #
 bookmarklet:	bookmarklet.js Makefile
-	( echo "javascript:\\c" ; sed -e "s+location = '+location='$(LIVE_LOCATION)+" < bookmarklet.js | uglifyjs ) > $@
+	( echo "javascript:\\c" ; sed -e "s+location = '+location='$(LIVE_LOCATION)+" < bookmarklet.js | $(UGLIFY) ) > $@
 
 test-bookmarklet:	bookmarklet.js Makefile
-	( echo "javascript:\\c" ; sed -e "s+location = '+location='$(TEST_LOCATION)+" -e "s/nocache = ''/nocache='?nocache='+Math.random()/" < bookmarklet.js | uglifyjs ) > $@
+	( echo "javascript:\\c" ; sed -e "s+location = '+location='$(TEST_LOCATION)+" -e "s/nocache = ''/nocache='?nocache='+Math.random()/" < bookmarklet.js | $(UGLIFY) ) > $@
 
 #
 #  dependencies
 #
-#  TBD: move to npm, it's more than a little bit naughty these are global installs
-#
 dependencies:
-	npm install -g uglify-js
-	npm install -g mocha
-	npm install should
+	npm install uglify-js mocha should
 
 #
 #  prune back to source code
