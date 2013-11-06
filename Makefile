@@ -9,6 +9,7 @@ init::	dependencies
 #  run tests
 #
 test::
+	@-mkdir -p extensions
 	mocha test/run.js
 
 #
@@ -32,10 +33,12 @@ test-bookmarklet:	bookmarklet.js Makefile
 #
 #  dependencies
 #
-#  TBD: move to npm, it's a little bit naughty these are global installs
+#  TBD: move to npm, it's more than a little bit naughty these are global installs
 #
 dependencies:
-	npm install -g uglify-js mocha should
+	npm install -g uglify-js
+	npm install -g mocha
+	npm install should
 
 #
 #  prune back to source code
