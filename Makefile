@@ -44,3 +44,4 @@ dependencies:
 #
 clean::
 	rm -f bookmarklet test-bookmarklet index.html test.html
+	rm -rf node_modules extensions
