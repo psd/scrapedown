@@ -45,6 +45,9 @@ function toMarkdown(html) {
         em: function(node) {
             return "_" + descend(node) + "_";
         },
+        i: function(node) {
+            return "_" + descend(node) + "_";
+        },
         h1: h,
         h2: h,
         h3: h,
