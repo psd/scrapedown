@@ -14,6 +14,7 @@ function toMarkdown(html) {
         return string.replace(/\n{3,}/g, '\n\n');   // at most two consecutive blanklines
     }
 
+    // generators
     function h(node) {
         var depth = parseInt(node.nodeName.substring(1,2), 10);
         var prefix = '';
@@ -24,6 +25,11 @@ function toMarkdown(html) {
     }
 
     var element = {
+        a: function(node) {
+            var href = node.getAttribute('href') || "";
+            var title = node.getAttribute('title') || "";
+            return "[" + descend(node) + "](" + href + (title ?  ' "' + title  + '"' : "") + ")";
+        },
         b: function(node) {
             return "**" + descend(node) + "**";
         },
