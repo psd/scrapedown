@@ -18,6 +18,9 @@ function toMarkdown(html) {
         b: function(node) {
             return "**" + descend(node) + "**";
         },
+        strong: function(node) {
+            return "**" + descend(node) + "**";
+        },
         em: function(node) {
             return "_" + descend(node) + "_";
         },
