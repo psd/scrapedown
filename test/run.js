@@ -30,17 +30,9 @@ var runTestsInDir = function(dir, testExpected, testActual) {
             var expected = testExpected(mdpath, htmlpath);
             var actual = testActual(mdpath, htmlpath);
 
-            // Normalize line returns
-            expected = expected.replace(/\r/g, '');
-
-            // Ignore all leading/trailing whitespace
-            expected = expected.trim().split('\n').map(function(x){
-                return x.trim();
-            }).join('\n');
-
-            actual = actual.trim().split('\n').map(function(x){
-                return x.trim();
-            }).join('\n');
+            // Normalize line-endings, leading and trailing whitespace
+            expected = expected.trim().replace(/\r/g, '');
+            actual = actual.trim().replace(/\r/g, '');
 
             // Compare
             actual.should.equal(expected);
