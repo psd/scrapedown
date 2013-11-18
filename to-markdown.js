@@ -36,6 +36,12 @@ function toMarkdown(html) {
         strong: function(node) {
             return "**" + descend(node) + "**";
         },
+        del: function(node) {
+            return "~~" + descend(node) + "~~";
+        },
+        strike: function(node) {
+            return "~~" + descend(node) + "~~";
+        },
         em: function(node) {
             return "_" + descend(node) + "_";
         },
