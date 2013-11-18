@@ -3,12 +3,26 @@
  */
 function toMarkdown(html) {
 
-    var elements = {
+    // trim leading/trailing whitespace
+    function trim(string) {
+        return string.replace(/^[\t\r\n]+|[\t\r\n]+$/g, '');
+    }
+
+    // cleanup markdown text
+    function cleanup(string) {
+        string = trim(string);
+        return string.replace(/\n{3,}/g, '\n\n');   // at most two consecutive blanklines
+    }
+
+    var element = {
         b: function(node) {
             return "**" + descend(node) + "**";
         },
+        em: function(node) {
+            return "_" + descend(node) + "_";
+        },
         p: function(node) {
-            return descend(node) + "\n";
+            return trim(descend(node)) + "\n";
         }
     };
 
@@ -25,14 +39,15 @@ function toMarkdown(html) {
 
     function walk(node, markdown) {
 
+        var type = node.nodeType
+        var name = node.nodeName.toLowerCase();
         var data = node.data ? node.data : "";
         var text = "";
-        var element = node.nodeName.toLowerCase();
 
-        if (node.nodeType === 3) {
+        if (type === 3) {
             text = data;
-        } else if (node.nodeType === 1 && elements[element]) {
-            text = (elements[element])(node);
+        } else if (type === 1 && element[name]) {
+            text = (element[name])(node);
         } else {
             text = descend(node);
         }
@@ -40,14 +55,17 @@ function toMarkdown(html) {
         return markdown + text;
     }
 
-    // use the dom to parse the st
+    // convert string to dom
     if (typeof html === "string") {
         var wrapper = document.createElement('div');
         wrapper.innerHTML = html;
         html = wrapper;
     }
 
-    return walk(html, "");
+    // generate makedown from dom
+    var markdown = walk(html, "");
+    markdown = cleanup(markdown);
+    return markdown;
 };
 
 // export
