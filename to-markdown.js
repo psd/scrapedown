@@ -27,6 +27,12 @@ function toMarkdown(html) {
         hr: function(node) {
             return "\n---\n";
         },
+        img: function(node) {
+            var alt = node.getAttribute('alt') || "";
+            var src = node.getAttribute('src') || "";
+            var title = node.getAttribute('title') || "";
+            return "![" + alt + "](" + src + (title ?  ' "' + title  + '"' : "") + ")";
+        },
         p: function(node) {
             return trim(descend(node)) + "\n";
         }
