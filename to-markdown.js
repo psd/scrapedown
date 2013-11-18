@@ -24,6 +24,9 @@ function toMarkdown(html) {
         em: function(node) {
             return "_" + descend(node) + "_";
         },
+        hr: function(node) {
+            return "\n---\n";
+        },
         p: function(node) {
             return trim(descend(node)) + "\n";
         }
