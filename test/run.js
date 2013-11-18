@@ -5,6 +5,11 @@ var showdown    = new require('../showdown'),
     should      = require('should');
 
 /*
+ *  dom for to-markdown
+ */
+document = require("jsdom").jsdom();
+
+/*
  *  run all the test cases in a directory
  */
 var runTestsInDir = function(dir, testExpected, testActual) {

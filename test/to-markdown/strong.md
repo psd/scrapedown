@@ -1,4 +1,0 @@
-
-**important**
-
-really **freaking**strong
