@@ -16,9 +16,9 @@ var runTestsInDir = function(dir, testExpected, testActual) {
 
     // Load test cases from disk
     var cases = fs.readdirSync(dir).filter(function(file){
-        return ~file.indexOf('.md');
+        return ~file.indexOf('.html');
     }).map(function(file){
-        return file.replace('.md', '');
+        return file.replace('.html', '');
     });
 
     // Run each test case (markdown -> html)
