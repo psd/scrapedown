@@ -3,15 +3,18 @@
  */
 function toMarkdown(html) {
 
-    // normalise markdown paragraph text
-    function paragraph(string) {
+    // normalise whitespace in markdown text
+    function normalise(string) {
         return string.split('\n').map(function(line) {
                 return line.trim().             // trim each line
-                    replace(/\n/g, ' ').        // replace newlines with spaces
                     replace(/[ \t]+/g, ' ');    // squash multiple spaces
             }).join('\n').                      // join them again
-            replace(/\n{2,}/g, '\n').           // squash multiple newlines
+            replace(/\n{3,}/g, '\n\n').         // squash multiple newlines
             trim();                             // trim the result
+    }
+
+    function paragraph(string) {
+        return string.replace(/\s+/g, ' ').trim();
     }
 
     // generators
@@ -64,10 +67,10 @@ function toMarkdown(html) {
             return "![" + alt + "](" + src + (title ?  ' "' + title  + '"' : "") + ")";
         },
         p: function(node) {
-            return "\n" + paragraph(descend(node)) + "\n";
+            return "\n\n" + paragraph(descend(node)) + "\n\n";
         },
         div: function(node) {
-            return "\n" + paragraph(descend(node)) + "\n";
+            return "\n\n" + descend(node) + "\n\n";
         }
     };
 
@@ -109,6 +112,7 @@ function toMarkdown(html) {
 
     // generate markdown by walking the dom
     var markdown = walk(html, "").trim();
+    markdown = normalise(markdown);
     return markdown;
 };
 
