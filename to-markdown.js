@@ -72,6 +72,9 @@ function toMarkdown(html) {
         p: function(node) {
             return "\n\n" + paragraph(descend(node)) + "\n\n";
         },
+        blockquote: function(node) {
+            return "\n\n> " + paragraph(descend(node)) + "\n\n";
+        },
         div: function(node) {
             return "\n\n" + descend(node) + "\n\n";
         },
