@@ -13,7 +13,7 @@ function toMarkdown(html) {
             trim();                             // trim the result
     }
 
-    function paragraph(string) {
+    function block(string) {
         return string.replace(/\s+/g, ' ').trim();
     }
 
@@ -70,16 +70,28 @@ function toMarkdown(html) {
             return "![" + alt + "](" + src + (title ?  ' "' + title  + '"' : "") + ")";
         },
         p: function(node) {
-            return "\n\n" + paragraph(descend(node)) + "\n\n";
+            return "\n\n" + block(descend(node)) + "\n\n";
         },
         blockquote: function(node) {
-            return "\n\n> " + paragraph(descend(node)) + "\n\n";
+            return "\n\n> " + block(descend(node)) + "\n\n";
         },
         div: function(node) {
             return "\n\n" + descend(node) + "\n\n";
         },
         pre: function(node) {
             return "\n```\n" + descend(node).trim() + "\n```\n";
+        },
+        table: function(node) {
+            return "\n" + descend(node).replace(/\|\s*\n+\s*\|/g, '|\n|') + "\n";
+        },
+        tr: function(node) {
+            return "| " + block(descend(node)) + "\n";
+        },
+        th: function(node) {
+            return " " + descend(node).trim() + " |";
+        },
+        td: function(node) {
+            return " " + descend(node).trim() + " |";
         }
     };
 
