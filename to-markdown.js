@@ -3,19 +3,8 @@
  */
 function toMarkdown(html) {
 
-    // trim leading/trailing whitespace
-    function trim(string) {
-        return string.replace(/^[\t\r\n]+|[\t\r\n]+$/g, '');
-    }
-
-    // cleanup markdown text
-    function cleanup(string) {
-        string = trim(string);
-        return string.replace(/\n{3,}/g, '\n\n');   // at most two consecutive blanklines
-    }
-
     function normalise(string) {
-        return string.replace(/[ \t]+/g, ' ').replace(/\n/g, ' ');
+        return string.trim().replace(/\n/g, ' ').replace(/[ \t]+/g, ' ');
     }
 
     // generators
@@ -68,7 +57,7 @@ function toMarkdown(html) {
             return "![" + alt + "](" + src + (title ?  ' "' + title  + '"' : "") + ")";
         },
         p: function(node) {
-            return "\n" + trim(descend(node)) + "\n";
+            return "\n" + normalise(descend(node)) + "\n";
         }
     };
 
@@ -91,7 +80,7 @@ function toMarkdown(html) {
         var text = "";
 
         if (type === 3) {
-            text = normalise(data);
+            text = data;
         } else if (type === 1 && element[name]) {
             text = (element[name])(node);
         } else {
@@ -108,11 +97,13 @@ function toMarkdown(html) {
         html = wrapper;
     }
 
-    // generate makedown from dom
-    var markdown = walk(html, "");
-    //markdown = cleanup(markdown);
+    // generate markdown by walking the dom
+    var markdown = walk(html, "").trim();
     return markdown;
 };
+
+// polyfill for trim
+''.trim||(String.prototype.trim=function(){return this.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g,'')})
 
 // export
 if (typeof module !== 'undefined') module.exports = toMarkdown;
