@@ -14,6 +14,10 @@ function toMarkdown(html) {
         return string.replace(/\n{3,}/g, '\n\n');   // at most two consecutive blanklines
     }
 
+    function normalise(string) {
+        return string.replace(/[ \t]+/g, ' ').replace(/\n/g, ' ');
+    }
+
     // generators
     function h(node) {
         var depth = parseInt(node.nodeName.substring(1,2), 10);
@@ -64,7 +68,7 @@ function toMarkdown(html) {
             return "![" + alt + "](" + src + (title ?  ' "' + title  + '"' : "") + ")";
         },
         p: function(node) {
-            return trim(descend(node)) + "\n";
+            return "\n" + trim(descend(node)) + "\n";
         }
     };
 
@@ -87,7 +91,7 @@ function toMarkdown(html) {
         var text = "";
 
         if (type === 3) {
-            text = data;
+            text = normalise(data);
         } else if (type === 1 && element[name]) {
             text = (element[name])(node);
         } else {
@@ -106,7 +110,7 @@ function toMarkdown(html) {
 
     // generate makedown from dom
     var markdown = walk(html, "");
-    markdown = cleanup(markdown);
+    //markdown = cleanup(markdown);
     return markdown;
 };
 
