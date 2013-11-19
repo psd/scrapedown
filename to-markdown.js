@@ -3,8 +3,15 @@
  */
 function toMarkdown(html) {
 
-    function normalise(string) {
-        return string.trim().replace(/\n/g, ' ').replace(/[ \t]+/g, ' ');
+    // normalise markdown paragraph text
+    function paragraph(string) {
+        return string.split('\n').map(function(line) {
+                return line.trim().             // trim each line
+                    replace(/\n/g, ' ').        // replace newlines with spaces
+                    replace(/[ \t]+/g, ' ');    // squash multiple spaces
+            }).join('\n').                      // join them again
+            replace(/\n{2,}/g, '\n').           // squash multiple newlines
+            trim();                             // trim the result
     }
 
     // generators
@@ -57,7 +64,10 @@ function toMarkdown(html) {
             return "![" + alt + "](" + src + (title ?  ' "' + title  + '"' : "") + ")";
         },
         p: function(node) {
-            return "\n" + normalise(descend(node)) + "\n";
+            return "\n" + paragraph(descend(node)) + "\n";
+        },
+        div: function(node) {
+            return "\n" + paragraph(descend(node)) + "\n";
         }
     };
 
