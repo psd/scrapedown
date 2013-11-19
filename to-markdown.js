@@ -74,6 +74,9 @@ function toMarkdown(html) {
         },
         div: function(node) {
             return "\n\n" + descend(node) + "\n\n";
+        },
+        pre: function(node) {
+            return "\n```\n" + descend(node).trim() + "\n```\n";
         }
     };
 
