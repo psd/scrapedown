@@ -39,6 +39,9 @@ function toMarkdown(html) {
         strong: function(node) {
             return "**" + descend(node) + "**";
         },
+        code: function(node) {
+            return "`" + descend(node) + "`";
+        },
         del: function(node) {
             return "~~" + descend(node) + "~~";
         },
