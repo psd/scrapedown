@@ -92,6 +92,9 @@ function toMarkdown(html) {
         },
         td: function(node) {
             return " " + descend(node).trim() + " |";
+        },
+        li: function(node) {
+            return "# " + block(descend(node)) + "\n";
         }
     };
 
