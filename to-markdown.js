@@ -94,7 +94,7 @@ function toMarkdown(html) {
             return " " + descend(node).trim() + " |";
         },
         li: function(node) {
-            return "# " + block(descend(node)) + "\n";
+            return "# " + descend(node) + "\n";
         }
     };
 
@@ -116,7 +116,7 @@ function toMarkdown(html) {
         var data = node.data ? node.data : "";
         var text = "";
 
-        if (type === 3) {
+        if (type === 3 && !data.match(/^\s+$/)) {
             text = data;
         } else if (type === 1 && element[name]) {
             text = (element[name])(node);
