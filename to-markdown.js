@@ -27,6 +27,11 @@ function toMarkdown(html) {
         return '\n\n' + prefix + ' ' + descend(node) + '\n';
     }
 
+    function bullet_ul() {
+        return "* ";
+    }
+    var bullet = bullet_ul;
+
     var element = {
         a: function(node) {
             var href = node.getAttribute('href') || "";
@@ -93,8 +98,21 @@ function toMarkdown(html) {
         td: function(node) {
             return " " + descend(node).trim() + " |";
         },
+        ul: function(node) {
+            bullet = bullet_ul;
+            text = descend(node) + "\n";
+            bullet = bullet_ul;
+            return text;
+        },
+        ol: function(node) {
+            var n = 0;
+            bullet = function() { n = n + 1; return n + ". "; };
+            text = descend(node) + "\n";
+            bullet = bullet_ul;
+            return text;
+        },
         li: function(node) {
-            return "# " + descend(node) + "\n";
+            return bullet() + descend(node) + "\n";
         }
     };
 
