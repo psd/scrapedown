@@ -5,16 +5,13 @@ function toMarkdown(html) {
 
     // normalise whitespace in markdown text
     function normalise(string) {
-        return string.split('\n').map(function(line) {
-                return line.trim().             // trim each line
-                    replace(/[ \t]+/g, ' ');    // squash multiple spaces
-            }).join('\n').                      // join them again
+        return string.
             replace(/\n{3,}/g, '\n\n').         // squash multiple newlines
             trim();                             // trim the result
     }
 
-    function block(string) {
-        return string.replace(/\s+/g, ' ').trim();
+    function squash(string) {
+        return string.replace(/\s+/g, ' ');
     }
 
     // generators
@@ -24,13 +21,15 @@ function toMarkdown(html) {
         for (var i = 0; i < depth; i++) {
             prefix += '#';
         }
-        return '\n\n' + prefix + ' ' + descend(node) + '\n';
+        return '\n\n' + prefix + ' ' + descend(node).trim() + '\n';
     }
 
     function bullet_ul() {
         return "* ";
     }
+
     var bullet = bullet_ul;
+    var pre = false;
 
     var element = {
         a: function(node) {
@@ -75,22 +74,25 @@ function toMarkdown(html) {
             return "![" + alt + "](" + src + (title ?  ' "' + title  + '"' : "") + ")";
         },
         p: function(node) {
-            return "\n\n" + block(descend(node)) + "\n\n";
+            return "\n\n" + descend(node).trim() + "\n\n";
         },
         blockquote: function(node) {
-            return "\n\n> " + block(descend(node)) + "\n\n";
+            return "\n\n> " + descend(node).trim() + "\n\n";
         },
         div: function(node) {
-            return "\n\n" + descend(node) + "\n\n";
+            return "\n\n" + descend(node).trim() + "\n\n";
         },
         pre: function(node) {
-            return "\n```\n" + descend(node).trim() + "\n```\n";
+            pre = true;
+            text = "\n```\n" + descend(node).trim() + "\n```\n";
+            pre = false;
+            return text;
         },
         table: function(node) {
             return "\n" + descend(node).replace(/\|\s*\n+\s*\|/g, '|\n|') + "\n";
         },
         tr: function(node) {
-            return "| " + block(descend(node)) + "\n";
+            return "| " + descend(node).trim() + "\n";
         },
         th: function(node) {
             return " " + descend(node).trim() + " |";
@@ -135,7 +137,7 @@ function toMarkdown(html) {
         var text = "";
 
         if (type === 3 && !data.match(/^\s+$/)) {
-            text = data;
+            text = pre ? data : squash(data);
         } else if (type === 1 && element[name]) {
             text = (element[name])(node);
         } else {
