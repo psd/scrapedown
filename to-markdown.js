@@ -31,6 +31,20 @@ function toMarkdown(html) {
     var bullet = bullet_ul;
     var pre = false;
 
+    // headings
+    var hcols = 0;
+    function headings() {
+        if (!hcols) {
+            return "";
+        }
+        var headings = "|";
+        while (hcols > 0) {
+            headings = headings + "-|";
+            hcols--;
+        }
+        return headings + "\n";
+    }
+
     var element = {
         a: function(node) {
             var href = node.getAttribute('href') || "";
@@ -92,9 +106,12 @@ function toMarkdown(html) {
             return "\n" + descend(node).replace(/\|\s*\n+\s*\|/g, '|\n|') + "\n";
         },
         tr: function(node) {
-            return "| " + descend(node).trim() + "\n";
+            hcols = 0;
+            var text = "| " + descend(node).trim() + "\n";
+            return text + headings();
         },
         th: function(node) {
+            hcols++;
             return " " + descend(node).trim() + " |";
         },
         td: function(node) {
