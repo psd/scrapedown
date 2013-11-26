@@ -4,8 +4,6 @@
  * https://github.com/chjj/marked
  */
 
-;(function() {
-
 /**
  * Block-Level Grammar
  */
@@ -1156,12 +1154,4 @@ marked.parse = marked;
 
 if (typeof exports === 'object') {
   module.exports = marked;
-} else if (typeof define === 'function' && define.amd) {
-  define(function() { return marked; });
-} else {
-  this.marked = marked;
 }
-
-}).call(function() {
-  return this || (typeof window !== 'undefined' ? window : global);
-}());
