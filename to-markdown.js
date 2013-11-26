@@ -3,15 +3,26 @@
  */
 function toMarkdown(html) {
 
-    // normalise whitespace in markdown text
-    function normalise(string) {
-        return string.
-            replace(/\n{3,}/g, '\n\n').         // squash multiple newlines
-            trim();                             // trim the result
-    }
+    var pre = false;
 
     function squash(string) {
         return string.replace(/\s+/g, ' ');
+    }
+
+    // normalise whitespace in markdown text
+    function normalise(string) {
+        pre = false;
+        return string.split('\n').map(function(line) {
+                if (line === "```") {
+                    pre = !pre;
+                }
+                if (pre) {
+                    return line;
+                }
+                return line.match(/^\s*\* |^\s*[1-9][0-9]*\. /) ? line : squash(line).trim();
+            }).join('\n').                      // join them again
+            replace(/\n{3,}/g, '\n\n').         // squash multiple newlines
+            trim();                             // trim the result
     }
 
     // generators
@@ -29,7 +40,6 @@ function toMarkdown(html) {
     }
 
     var bullet = bullet_ul;
-    var pre = false;
 
     // headings
     var hcols = 0;
@@ -98,9 +108,10 @@ function toMarkdown(html) {
         },
         pre: function(node) {
             pre = true;
-            text = "\n```\n" + descend(node).trim() + "\n```\n";
+            var text = "\n```\n" + descend(node).trim() + "\n```\n";
             pre = false;
             return text;
+
         },
         table: function(node) {
             return "\n" + descend(node).replace(/\|\s*\n+\s*\|/g, '|\n|') + "\n";
