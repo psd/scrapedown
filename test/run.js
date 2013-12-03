@@ -1,4 +1,4 @@
-var showdown    = new require('../showdown'),
+var marked    = new require('../marked'),
     toMarkdown = new require('../to-markdown'),
     fs          = require('fs'),
     path        = require('path'),
@@ -22,22 +22,24 @@ var runTestsInDir = function(dir, testExpected, testActual) {
     });
 
     // Run each test case (markdown -> html)
-    showdown.forEach(cases, function(test){
-        it (test, function(){
-            var mdpath = path.join(dir, test + '.md');
-            var htmlpath = path.join(dir, test + '.html');
+    for (var i = 0; i < cases.length; i++) {
+        (function (test) {
+            it (test, function() {
+                var mdpath = path.join(dir, test + '.md');
+                var htmlpath = path.join(dir, test + '.html');
 
-            var expected = testExpected(mdpath, htmlpath);
-            var actual = testActual(mdpath, htmlpath);
+                var expected = testExpected(mdpath, htmlpath);
+                var actual = testActual(mdpath, htmlpath);
 
-            // Normalize line-endings, leading and trailing whitespace
-            expected = expected.trim().replace(/\r/g, '');
-            actual = actual.trim().replace(/\r/g, '');
+                // Normalize line-endings, leading and trailing whitespace
+                expected = expected.trim().replace(/\r/g, '');
+                actual = actual.trim().replace(/\r/g, '');
 
-            // Compare
-            actual.should.equal(expected);
-        });
-    });
+                // Compare
+                actual.should.equal(expected);
+            });
+        })(cases[i]);
+    }
 };
 
 
@@ -59,19 +61,17 @@ describe('to-markdown', function() {
 
 
 //
-// :: Showdown Markdown to HTML testing ::
+// :: Markdown to HTML testing ::
 //
-describe('Showdown', function() {
-    var converter = new showdown.converter();
-
-    var showdownExpected = function(mdpath, htmlpath) {
+describe('to-html', function() {
+    var toHtmlExpected = function(mdpath, htmlpath) {
         return fs.readFileSync(htmlpath, 'utf8');
     }
 
-    var showdownActual = function(mdpath, htmlpath) {
+    var toHtmlActual = function(mdpath, htmlpath) {
         var md = fs.readFileSync(mdpath, 'utf8');
-        return converter.makeHtml(md);
+        return marked(md);
     }
 
-    runTestsInDir('test/showdown', showdownExpected, showdownActual);
+    runTestsInDir('test/to-html', toHtmlExpected, toHtmlActual);
 });

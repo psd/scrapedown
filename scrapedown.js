@@ -41,7 +41,7 @@ function scrapedown_html(html) {
         scrapedown_build_gui();
         document.getElementById('inputPane').value = text;
 
-        loadScript("showdown.js", function () {
+        loadScript("marked.js", function () {
             scrapedown_render();
 
             // polling for changes is a little clumsy, but most reliable ..
@@ -97,11 +97,7 @@ function scrapedown_render() {
     }
     lastText = text;
 
-    if (!converter) {
-        converter = new Showdown.converter();
-    }
-
-    document.getElementById('previewPane').innerHTML = converter.makeHtml(text);
+    document.getElementById('previewPane').innerHTML = marked(text);
 };
 
 

@@ -35,9 +35,10 @@ test-bookmarklet:	bookmarklet.js Makefile
 
 #
 #  dependencies
+#  TBD: move to package.json
 #
 dependencies:
-	npm install uglify-js mocha should jsdom
+	npm install uglify-js mocha should jsdom marked
 
 #
 #  prune back to source code
