@@ -1,4 +1,1 @@
-  
-  > This is a multi line blockquote test
-  >
-  > With more than one line.
+> This is a very long line that will still be quoted properly when it wraps. Oh boy let's keep writing to make sure this is long enough to actually wrap for everyone.

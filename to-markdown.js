@@ -1,202 +1,195 @@
 /*
- * to-markdown - an HTML to Markdown converter
- *
- * Copyright 2011, Dom Christie
- * Licenced under the MIT licence
- *
+ *  to-markdown - convert html to markdown using the dom
  */
-function toMarkdown(string) {
+function toMarkdown(html) {
 
-  var ELEMENTS = [
-    {
-      patterns: 'p',
-      replacement: function(str, attrs, innerHTML) {
-        return innerHTML ? '\n\n' + cleanUp(innerHTML) + '\n' : '';
-      }
-    },
-    {
-      patterns: 'br',
-      type: 'void',
-      replacement: '\n'
-    },
-    {
-      patterns: 'h([1-6])',
-      replacement: function(str, hLevel, attrs, innerHTML) {
-        var hPrefix = '';
-        for(var i = 0; i < hLevel; i++) {
-          hPrefix += '#';
-        }
-        return '\n\n' + hPrefix + ' ' + innerHTML + '\n';
-      }
-    },
-    {
-      patterns: 'hr',
-      type: 'void',
-      replacement: '\n\n* * *\n'
-    },
-    {
-      patterns: 'a',
-      replacement: function(str, attrs, innerHTML) {
-        var href = attrs.match(attrRegExp('href'));
-        var title = attrs.match(attrRegExp('title'));
-        // escape parens to avoid URL and title breaking markdown
-        if (href && href[1]) {
-            href = href[1].replace(/\(/g, '%28').replace(/\)/g, '%29');
-        }
-        if (title && title[1]) {
-            title = title[1].replace(/\(/g, '\&#40;').replace(/\)/g, '\&#41;');
-        }
-        return href ? '[' + innerHTML + ']' + '(' + href + (title ? ' "' + title + '"' : '') + ')' : str;
-      }
-    },
-    {
-      patterns: ['b', 'strong'],
-      replacement: function(str, attrs, innerHTML) {
-        return innerHTML ? '**' + innerHTML + '**' : '';
-      }
-    },
-    {
-      patterns: ['i', 'em'],
-      replacement: function(str, attrs, innerHTML) {
-        return innerHTML ? '_' + innerHTML + '_' : '';
-      }
-    },
-    {
-      patterns: 'code',
-      replacement: function(str, attrs, innerHTML) {
-        return innerHTML ? '`' + innerHTML + '`' : '';
-      }
-    },
-    {
-      patterns: 'img',
-      type: 'void',
-      replacement: function(str, attrs, innerHTML) {
-        var src = attrs.match(attrRegExp('src')),
-            alt = attrs.match(attrRegExp('alt')),
-            title = attrs.match(attrRegExp('title'));
-        return '![' + (alt && alt[1] ? alt[1] : '') + ']' + '(' + src[1] + (title && title[1] ? ' "' + title[1] + '"' : '') + ')';
-      }
-    }
-  ];
+    var pre = false;
 
-  for(var i = 0, len = ELEMENTS.length; i < len; i++) {
-    if(typeof ELEMENTS[i].patterns === 'string') {
-      string = replaceEls(string, { tag: ELEMENTS[i].patterns, replacement: ELEMENTS[i].replacement, type:  ELEMENTS[i].type });
+    function squash(string) {
+        return string.replace(/\s+/g, ' ');
     }
-    else {
-      for(var j = 0, pLen = ELEMENTS[i].patterns.length; j < pLen; j++) {
-        string = replaceEls(string, { tag: ELEMENTS[i].patterns[j], replacement: ELEMENTS[i].replacement, type:  ELEMENTS[i].type });
-      }
-    }
-  }
 
-  function replaceEls(html, elProperties) {
-    var pattern = elProperties.type === 'void' ? '<' + elProperties.tag + '\\b([^>]*)\\/?>' : '<' + elProperties.tag + '\\b([^>]*)>([\\s\\S]*?)<\\/' + elProperties.tag + '>',
-        regex = new RegExp(pattern, 'gi'),
-        markdown = '';
-    if(typeof elProperties.replacement === 'string') {
-      markdown = html.replace(regex, elProperties.replacement);
+    // normalise whitespace in markdown text
+    function normalise(string) {
+        pre = false;
+        return string.split('\n').map(function(line) {
+                if (line === "```") {
+                    pre = !pre;
+                }
+                if (pre) {
+                    return line;
+                }
+                return line.match(/^\s*\* |^\s*[1-9][0-9]*\. /) ? line : squash(line).trim();
+            }).join('\n').                      // join them again
+            replace(/\n{3,}/g, '\n\n').         // squash multiple newlines
+            trim();                             // trim the result
     }
-    else {
-      markdown = html.replace(regex, function(str, p1, p2, p3) {
-        return elProperties.replacement.call(this, str, p1, p2, p3);
-      });
+
+    // generators
+    function h(node) {
+        var depth = parseInt(node.nodeName.substring(1,2), 10);
+        var prefix = '';
+        for (var i = 0; i < depth; i++) {
+            prefix += '#';
+        }
+        return '\n\n' + prefix + ' ' + descend(node).trim() + '\n';
     }
+
+    function bullet_ul() {
+        return "* ";
+    }
+
+    var bullet = bullet_ul;
+
+    // headings
+    var hcols = 0;
+    function headings() {
+        if (!hcols) {
+            return "";
+        }
+        var headings = "|";
+        while (hcols > 0) {
+            headings = headings + "-|";
+            hcols--;
+        }
+        return headings + "\n";
+    }
+
+    var element = {
+        a: function(node) {
+            var href = node.getAttribute('href') || "";
+            var title = node.getAttribute('title') || "";
+            return "[" + descend(node) + "](" + href + (title ?  ' "' + title  + '"' : "") + ")";
+        },
+        b: function(node) {
+            return "**" + descend(node) + "**";
+        },
+        strong: function(node) {
+            return "**" + descend(node) + "**";
+        },
+        code: function(node) {
+            return "`" + descend(node) + "`";
+        },
+        del: function(node) {
+            return "~~" + descend(node) + "~~";
+        },
+        strike: function(node) {
+            return "~~" + descend(node) + "~~";
+        },
+        em: function(node) {
+            return "_" + descend(node) + "_";
+        },
+        i: function(node) {
+            return "_" + descend(node) + "_";
+        },
+        h1: h,
+        h2: h,
+        h3: h,
+        h4: h,
+        h5: h,
+        h6: h,
+        hr: function(node) {
+            return "\n---\n";
+        },
+        img: function(node) {
+            var alt = node.getAttribute('alt') || "";
+            var src = node.getAttribute('src') || "";
+            var title = node.getAttribute('title') || "";
+            return "![" + alt + "](" + src + (title ?  ' "' + title  + '"' : "") + ")";
+        },
+        p: function(node) {
+            return "\n\n" + descend(node).trim() + "\n\n";
+        },
+        blockquote: function(node) {
+            return "\n\n> " + descend(node).trim() + "\n\n";
+        },
+        div: function(node) {
+            return "\n\n" + descend(node).trim() + "\n\n";
+        },
+        pre: function(node) {
+            pre = true;
+            var text = "\n```\n" + descend(node).trim() + "\n```\n";
+            pre = false;
+            return text;
+
+        },
+        table: function(node) {
+            return "\n" + descend(node).replace(/\|\s*\n+\s*\|/g, '|\n|') + "\n";
+        },
+        tr: function(node) {
+            hcols = 0;
+            var text = "| " + descend(node).trim() + "\n";
+            return text + headings();
+        },
+        th: function(node) {
+            hcols++;
+            return " " + descend(node).trim() + " |";
+        },
+        td: function(node) {
+            return " " + descend(node).trim() + " |";
+        },
+        ul: function(node) {
+            bullet = bullet_ul;
+            text = descend(node) + "\n";
+            bullet = bullet_ul;
+            return text;
+        },
+        ol: function(node) {
+            var n = 0;
+            bullet = function() { n = n + 1; return n + ". "; };
+            text = descend(node) + "\n";
+            bullet = bullet_ul;
+            return text;
+        },
+        li: function(node) {
+            return bullet() + descend(node) + "\n";
+        }
+    };
+
+    // walk the dom tree
+    function descend(node) {
+        var text = "";
+        node = node.firstChild;
+        while (node) {
+            text = text + walk(node, "");
+            node = node.nextSibling;
+        }
+        return text;
+    }
+
+    function walk(node, markdown) {
+
+        var type = node.nodeType
+        var name = node.nodeName.toLowerCase();
+        var data = node.data ? node.data : "";
+        var text = "";
+
+        if (type === 3 && !data.match(/^\s+$/)) {
+            text = pre ? data : squash(data);
+        } else if (type === 1 && element[name]) {
+            text = (element[name])(node);
+        } else {
+            text = descend(node);
+        }
+
+        return markdown + text;
+    }
+
+    // convert string to dom
+    if (typeof html === "string") {
+        var wrapper = document.createElement('div');
+        wrapper.innerHTML = html;
+        html = wrapper;
+    }
+
+    // generate markdown by walking the dom
+    var markdown = walk(html, "").trim();
+    markdown = normalise(markdown);
     return markdown;
-  }
-
-  function attrRegExp(attr) {
-    return new RegExp(attr + '\\s*=\\s*["\']?([^"\']*)["\']?', 'i');
-  }
-
-  // ditch comments
-
-  string = string.replace(/<!--[\s\S]*?-->/g, '');
-
-  // ditch noscript blocks
-
-  string = string.replace(/<noscript[\s\S]*?<\/noscript>/g, '');
-
-  // ditch misc tags
-
-  string = string.replace(/<\/*(span|div|form|big|small)\b[^>]*>/gi, '');
-
-  // Pre code blocks
-
-  string = string.replace(/<pre\b[^>]*>`([\s\S]*)`<\/pre>/gi, function(str, innerHTML) {
-    innerHTML = innerHTML.replace(/^\t+/g, '  '); // convert tabs to spaces (you know it makes sense)
-    innerHTML = innerHTML.replace(/\n/g, '\n    ');
-    return '\n\n    ' + innerHTML + '\n';
-  });
-
-  // Lists
-
-  // Escape numbers that could trigger an ol
-  // If there are more than three spaces before the code, it would be in a pre tag
-  // Make sure we are escaping the period not matching any character
-  string = string.replace(/^(\s{0,3}\d+)\. /g, '$1\\. ');
-
-  // Converts lists that have no child lists (of same type) first, then works it's way up
-  var noChildrenRegex = /<(ul|ol)\b[^>]*>(?:(?!<ul|<ol)[\s\S])*?<\/\1>/gi;
-  while(string.match(noChildrenRegex)) {
-    string = string.replace(noChildrenRegex, function(str) {
-      return replaceLists(str);
-    });
-  }
-
-  function replaceLists(html) {
-
-    html = html.replace(/<(ul|ol)\b[^>]*>([\s\S]*?)<\/\1>/gi, function(str, listType, innerHTML) {
-      var lis = innerHTML.split('</li>');
-      lis.splice(lis.length - 1, 1);
-
-      for(i = 0, len = lis.length; i < len; i++) {
-        if(lis[i]) {
-          var prefix = (listType === 'ol') ? (i + 1) + ". " : "* ";
-          lis[i] = lis[i].replace(/\s*<li[^>]*>([\s\S]*)/i, function(str, innerHTML) {
-
-            innerHTML = innerHTML.replace(/^\s+/, '');
-            innerHTML = innerHTML.replace(/\n\n/g, '\n\n    ');
-            // indent nested lists
-            innerHTML = innerHTML.replace(/\n([ ]*)+(\*|\d+\.) /g, '\n$1    $2 ');
-            return prefix + innerHTML;
-          });
-        }
-      }
-      return lis.join('\n');
-    });
-    return '\n\n' + html.replace(/[ \t]+\n|\s+$/g, '');
-  }
-
-  // Blockquotes
-  var deepest = /<blockquote\b[^>]*>((?:(?!<blockquote)[\s\S])*?)<\/blockquote>/gi;
-  while(string.match(deepest)) {
-    string = string.replace(deepest, function(str) {
-      return replaceBlockquotes(str);
-    });
-  }
-
-  function replaceBlockquotes(html) {
-    html = html.replace(/<blockquote\b[^>]*>([\s\S]*?)<\/blockquote>/gi, function(str, inner) {
-      inner = inner.replace(/^\s*|\s*$/g, '');
-      inner = cleanUp(inner);
-      inner = inner.replace(/^/gm, '> ');
-      inner = inner.replace(/^(>([ \t]{2,}>)+)/gm, '> >');
-      return inner;
-    });
-    return html;
-  }
-
-  function cleanUp(string) {
-    string = string.replace(/\s*&nbsp;\s*/g, ' '); // ditch probably spurious &nbsp;
-    string = string.replace(/^[\t\r\n]+|[\t\r\n]+$/g, ''); // trim leading/trailing whitespace
-    string = string.replace(/\n\s+\n/g, '\n\n');
-    string = string.replace(/\n{3,}/g, '\n\n'); // limit consecutive linebreaks to 2
-    return string;
-  }
-
-  return cleanUp(string);
 };
+
+// polyfill for trim
+''.trim||(String.prototype.trim=function(){return this.replace(/^[\s\uFEFF]+|[\s\uFEFF]+$/g,'')})
 
 // export
 if (typeof module !== 'undefined') module.exports = toMarkdown;

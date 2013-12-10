@@ -1,8 +1,13 @@
-var showdown    = new require('../showdown'),
+var marked    = new require('../marked'),
     toMarkdown = new require('../to-markdown'),
     fs          = require('fs'),
     path        = require('path'),
     should      = require('should');
+
+/*
+ *  dom for to-markdown
+ */
+document = require("jsdom").jsdom();
 
 /*
  *  run all the test cases in a directory
@@ -11,36 +16,30 @@ var runTestsInDir = function(dir, testExpected, testActual) {
 
     // Load test cases from disk
     var cases = fs.readdirSync(dir).filter(function(file){
-        return ~file.indexOf('.md');
+        return ~file.indexOf('.html');
     }).map(function(file){
-        return file.replace('.md', '');
+        return file.replace('.html', '');
     });
 
     // Run each test case (markdown -> html)
-    showdown.forEach(cases, function(test){
-        it (test, function(){
-            var mdpath = path.join(dir, test + '.md');
-            var htmlpath = path.join(dir, test + '.html');
+    for (var i = 0; i < cases.length; i++) {
+        (function (test) {
+            it (test, function() {
+                var mdpath = path.join(dir, test + '.md');
+                var htmlpath = path.join(dir, test + '.html');
 
-            var expected = testExpected(mdpath, htmlpath);
-            var actual = testActual(mdpath, htmlpath);
+                var expected = testExpected(mdpath, htmlpath);
+                var actual = testActual(mdpath, htmlpath);
 
-            // Normalize line returns
-            expected = expected.replace(/\r/g, '');
+                // Normalize line-endings, leading and trailing whitespace
+                expected = expected.trim().replace(/\r/g, '');
+                actual = actual.trim().replace(/\r/g, '');
 
-            // Ignore all leading/trailing whitespace
-            expected = expected.trim().split('\n').map(function(x){
-                return x.trim();
-            }).join('\n');
-
-            actual = actual.trim().split('\n').map(function(x){
-                return x.trim();
-            }).join('\n');
-
-            // Compare
-            actual.should.equal(expected);
-        });
-    });
+                // Compare
+                actual.should.equal(expected);
+            });
+        })(cases[i]);
+    }
 };
 
 
@@ -62,19 +61,17 @@ describe('to-markdown', function() {
 
 
 //
-// :: Showdown Markdown to HTML testing ::
+// :: Markdown to HTML testing ::
 //
-describe('Showdown', function() {
-    var converter = new showdown.converter();
-
-    var showdownExpected = function(mdpath, htmlpath) {
+describe('to-html', function() {
+    var toHtmlExpected = function(mdpath, htmlpath) {
         return fs.readFileSync(htmlpath, 'utf8');
     }
 
-    var showdownActual = function(mdpath, htmlpath) {
+    var toHtmlActual = function(mdpath, htmlpath) {
         var md = fs.readFileSync(mdpath, 'utf8');
-        return converter.makeHtml(md);
+        return marked(md);
     }
 
-    runTestsInDir('test/showdown', showdownExpected, showdownActual);
+    runTestsInDir('test/to-html', toHtmlExpected, toHtmlActual);
 });
