@@ -1,6 +1,6 @@
 # Scrapedown
 
-A bookmarkelet to glean the contents of a web page as markdown.
+A bookmarklet to glean the contents of a web page as markdown.
 
 There are other [similar things](http://fuckyeahmarkdown.com/) out there, but this aims to be open source and run client-side.
 
